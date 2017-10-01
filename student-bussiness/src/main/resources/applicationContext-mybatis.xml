@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
+	default-lazy-init="true">
+
+	<description>Spring数据库配置</description>
+
+    <!--MyIbatis分页-->
+    <bean id="paginationInterceptor" class="com.wonpera.student.bussiness.plugin.PageHelper"></bean>
+
+	<!-- MyBatis配置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+        <property name="configLocation" value="classpath:mybatis-config.xml"></property>
+		<!-- 自动扫描po目录, 省掉Configuration.xml里的手工配置 -->
+		<property name="typeAliasesPackage" value="com.wonpera.student.common.bean;com.wonpera.student.common.response" />
+		<!-- 显式指定Mapper文件位置 -->
+		<property name="mapperLocations" value="classpath:/mybatis/*Mapper.xml" />
+        <property name="plugins">
+            <ref bean="paginationInterceptor"/>
+        </property>
+	</bean>
+
+	<!-- 扫描basePackage下所有以@MyBatisRepository标识的 接口 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.wonpera.student.bussiness.mapper" />
+		<property name="annotationClass"
+			value="com.wonpera.student.bussiness.mapper.MyBatisRepository" />
+	</bean>
+
+	<!-- 事务管理器配置, Jpa单数据源事务 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+
+    <!-- 配置 NamedParameterJdbcTemplate，该对象可以使用具名参数。
+	但它没有无参构造器，所以必须为其制定构造参数，这里指定的是出c3p0数据源
+	-->
+    <bean id="namedParameterJdbcTemplate"
+          class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+        <constructor-arg ref="dataSource"></constructor-arg>
+    </bean>
+
+	<!-- 使用annotation定义事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager"
+		proxy-target-class="true" />
+
+	<!-- 定义aspectj -->
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<!-- production环境 -->
+	<beans profile="production">
+		<context:property-placeholder
+				ignore-resource-not-found="true" location="classpath*:/application.properties" />
+		<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init">
+			<property name="url" value="${jdbc.url}"/>
+			<property name="username" value="${jdbc.username}"/>
+			<property name="password" value="${jdbc.password}"/>
+			<property name="driverClassName" value="${jdbc.driver}"/>
+			<property name="filters" value="stat"/>
+			<property name="maxActive" value="20"/>
+			<property name="initialSize" value="1"/>
+			<property name="maxWait" value="60000"/>
+			<property name="minIdle" value="1"/>
+			<property name="timeBetweenEvictionRunsMillis" value="60000"/>
+			<property name="minEvictableIdleTimeMillis" value="300000"/>
+			<property name="validationQuery" value="SELECT 'x' FROM DUAL"/>
+			<property name="testWhileIdle" value="true"/>
+			<property name="testOnBorrow" value="false"/>
+			<property name="testOnReturn" value="false"/>
+			<property name="poolPreparedStatements" value="true"/>
+			<property name="maxPoolPreparedStatementPerConnectionSize" value="50"/>
+		</bean>
+	</beans>
+</beans>

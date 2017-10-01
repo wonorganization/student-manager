@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <configuration debug="true"> 调试模式下，可输出logback的内部日志信息 --> 
+<configuration debug="true">
+	<!-- 定义变量${user.dir} -->  
+    <property name="LOG_HOME" value="logs" />  
+    <!-- 引用其它文件的设置 <property file="res/log_config.properties" /> --> 
+    
+     <!-- appender(输出端) 此处是控制台输出，用的是ConsoleAppender,STDOUT，此名字随意起，和root下的一致就行 -->  
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!-- ===================================================================== -->
+	<!--  				文件输出												   -->
+	<!-- ===================================================================== -->
+	
+	<!-- ===================================================================== -->
+	<!-- Appenders 														       -->
+	<!-- ===================================================================== -->
+	<!-- [公共Appender] 默认 -->
+	<appender name="STDOUT_LOGGING"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/dky/dky-website.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		  	<!--日志文件输出的文件名 -->  
+			<fileNamePattern>${LOG_HOME}/student/student-web.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+		</rollingPolicy>
+		<encoder>
+			<!--%date日期 %level日志级别 [%thread]当前线程 %logger{50}输出日志的类，50代表包名加类名的总长度限制 [%file:%line]日志所在文件及行数 %msg%n消息及换行 -->  
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!-- [公共Appender] 汇总错误
+	<appender name="ERROR-APPENDER"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/cq/cq-error.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/cq/cq-error.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>-->
+
+	<!-- 级别定义，输出端内容输出级别，大于或等于root定义的level，方能在输出端输出 -->  
+	<!-- ===================================================================== -->
+    <!-- Root logger                                                           -->
+    <!-- ===================================================================== -->
+	<root level="INFO">
+		<appender-ref ref="console" />
+		<appender-ref ref="STDOUT_LOGGING" />
+		<!--<appender-ref ref="ERROR-APPENDER"/>-->
+	</root>
+</configuration>

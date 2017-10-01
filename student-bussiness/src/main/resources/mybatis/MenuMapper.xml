@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wonpera.student.bussiness.mapper.MenuMapper">
+  <resultMap id="BaseResultMap" type="com.wonpera.student.common.bean.Menu">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="menuId" jdbcType="BIGINT" property="menuid" />
+    <result column="menuName" jdbcType="VARCHAR" property="menuname" />
+    <result column="linkUrl" jdbcType="VARCHAR" property="linkurl" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="parentMenuId" jdbcType="BIGINT" property="parentmenuid" />
+    <result column="orderClomun" jdbcType="BIGINT" property="orderclomun" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, menuId, menuName, linkUrl, icon, parentMenuId, orderClomun, createTime
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_menu
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_menu
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.wonpera.student.common.bean.Menu">
+    insert into t_menu (id, menuId, menuName, 
+      linkUrl, icon, parentMenuId, 
+      orderClomun, createTime)
+    values (#{id,jdbcType=BIGINT}, #{menuid,jdbcType=BIGINT}, #{menuname,jdbcType=VARCHAR}, 
+      #{linkurl,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, #{parentmenuid,jdbcType=BIGINT}, 
+      #{orderclomun,jdbcType=BIGINT}, #{createtime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wonpera.student.common.bean.Menu">
+    insert into t_menu
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="menuid != null">
+        menuId,
+      </if>
+      <if test="menuname != null">
+        menuName,
+      </if>
+      <if test="linkurl != null">
+        linkUrl,
+      </if>
+      <if test="icon != null">
+        icon,
+      </if>
+      <if test="parentmenuid != null">
+        parentMenuId,
+      </if>
+      <if test="orderclomun != null">
+        orderClomun,
+      </if>
+      <if test="createtime != null">
+        createTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="menuid != null">
+        #{menuid,jdbcType=BIGINT},
+      </if>
+      <if test="menuname != null">
+        #{menuname,jdbcType=VARCHAR},
+      </if>
+      <if test="linkurl != null">
+        #{linkurl,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null">
+        #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="parentmenuid != null">
+        #{parentmenuid,jdbcType=BIGINT},
+      </if>
+      <if test="orderclomun != null">
+        #{orderclomun,jdbcType=BIGINT},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wonpera.student.common.bean.Menu">
+    update t_menu
+    <set>
+      <if test="menuid != null">
+        menuId = #{menuid,jdbcType=BIGINT},
+      </if>
+      <if test="menuname != null">
+        menuName = #{menuname,jdbcType=VARCHAR},
+      </if>
+      <if test="linkurl != null">
+        linkUrl = #{linkurl,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null">
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="parentmenuid != null">
+        parentMenuId = #{parentmenuid,jdbcType=BIGINT},
+      </if>
+      <if test="orderclomun != null">
+        orderClomun = #{orderclomun,jdbcType=BIGINT},
+      </if>
+      <if test="createtime != null">
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wonpera.student.common.bean.Menu">
+    update t_menu
+    set menuId = #{menuid,jdbcType=BIGINT},
+      menuName = #{menuname,jdbcType=VARCHAR},
+      linkUrl = #{linkurl,jdbcType=VARCHAR},
+      icon = #{icon,jdbcType=VARCHAR},
+      parentMenuId = #{parentmenuid,jdbcType=BIGINT},
+      orderClomun = #{orderclomun,jdbcType=BIGINT},
+      createTime = #{createtime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <select id="queryUserMenuWithParent" resultType="com.wonpera.student.common.bean.Menu">
+        SELECT m.* FROM t_user_menu um
+        INNER JOIN t_menu m
+        ON um.menuId = m.id
+        WHERE um.userId = #{userId}
+        <if test="parentId != null">
+            AND  m.parentMenuId=#{parentId}
+        </if>
+        order by orderClomun
+    </select>
+</mapper>
